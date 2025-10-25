@@ -1,15 +1,19 @@
 export function saveUserToLocalStorage(user) {
-  window.localStorage.setItem("user", JSON.stringify(user));
+    window.localStorage.setItem("user", JSON.stringify(user));
 }
 
-export function getUserFromLocalStorage(user) {
-  try {
-    return JSON.parse(window.localStorage.getItem("user"));
-  } catch (error) {
-    return null;
-  }
+export function getUserFromLocalStorage() {
+    try {
+        return JSON.parse(window.localStorage.getItem("user"));
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
 }
 
-export function removeUserFromLocalStorage(user) {
-  window.localStorage.removeItem("user");
+export function removeUserFromLocalStorage() {
+    window.localStorage.removeItem("user");
 }
+
+export const format = (text) =>
+    text.replaceAll("<", "&lt").replaceAll(">", "&gt");
