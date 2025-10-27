@@ -104,6 +104,7 @@ export function renderAuthPageComponent({ appEl, setUser }) {
             .getElementById("login-button")
             .addEventListener("click", () => {
                 entry("");
+                let message = "";
 
                 if (isLoginMode) {
                     // Обработка входа
@@ -114,13 +115,16 @@ export function renderAuthPageComponent({ appEl, setUser }) {
                         document.getElementById("password-input").value,
                     );
 
-                    if (!login) {
-                        entry("Введите логин");
-                        return;
-                    }
+                    if (!login || !password) {
+                        if (!login) {
+                            message = message + "\nВведите логин";
+                        }
 
-                    if (!password) {
-                        entry("Введите пароль");
+                        if (!password) {
+                            message = message + "\nВведите пароль";
+                        }
+
+                        entry(message);
                         return;
                     }
 
@@ -130,7 +134,7 @@ export function renderAuthPageComponent({ appEl, setUser }) {
                         })
                         .catch((error) => {
                             console.warn(error);
-                            entry(error.message);
+                            entry("\n" + error.message);
                         });
                 } else {
                     // Обработка регистрации
@@ -144,23 +148,24 @@ export function renderAuthPageComponent({ appEl, setUser }) {
                         document.getElementById("password-input").value,
                     );
 
-                    if (!name) {
-                        alert("Введите имя");
-                        return;
-                    }
+                    if (!name || !login || !password || !url) {
+                        if (!name) {
+                            message = message + "\nВведите имя";
+                        }
 
-                    if (!login) {
-                        alert("Введите логин");
-                        return;
-                    }
+                        if (!login) {
+                            message = message + "\nВведите логин";
+                        }
 
-                    if (!password) {
-                        alert("Введите пароль");
-                        return;
-                    }
+                        if (!password) {
+                            message = message + "\nВведите пароль";
+                        }
 
-                    if (!url) {
-                        alert("Не выбрана фотография");
+                        if (!url) {
+                            message = message + "\nНе выбрана фотография";
+                        }
+
+                        entry(message);
                         return;
                     }
 
@@ -170,7 +175,7 @@ export function renderAuthPageComponent({ appEl, setUser }) {
                         })
                         .catch((error) => {
                             console.warn(error);
-                            entry(error.message);
+                            entry("\n" + error.message);
                         });
                 }
             });

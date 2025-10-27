@@ -163,6 +163,7 @@
 
 .form-error {
   color: red;
+  white-space: pre;
 }
 
 .form-footer {
