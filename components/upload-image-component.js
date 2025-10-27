@@ -1,4 +1,5 @@
 import { uploadImage } from "../api.js";
+import { updateUrl } from "../helpers.js";
 
 /**
  * Компонент загрузки изображения.
@@ -16,6 +17,7 @@ export function renderUploadImageComponent({ element, onImageUrlChange }) {
      * @type {string}
      */
     let imageUrl = "";
+    updateUrl("");
 
     /**
      * Функция рендеринга компонента.
@@ -59,6 +61,7 @@ export function renderUploadImageComponent({ element, onImageUrlChange }) {
                 // Загружаем изображение с помощью API
                 uploadImage({ file }).then(({ fileUrl }) => {
                     imageUrl = fileUrl; // Сохраняем URL загруженного изображения
+                    updateUrl(imageUrl);
                     onImageUrlChange(imageUrl); // Уведомляем о изменении URL изображения
                     render(); // Перерисовываем компонент с новым состоянием
                 });
@@ -70,6 +73,7 @@ export function renderUploadImageComponent({ element, onImageUrlChange }) {
             .querySelector(".file-upload-remove-button")
             ?.addEventListener("click", () => {
                 imageUrl = ""; // Сбрасываем URL изображения
+                updateUrl("");
                 onImageUrlChange(imageUrl); // Уведомляем об изменении URL изображения
                 render(); // Перерисовываем компонент
             });

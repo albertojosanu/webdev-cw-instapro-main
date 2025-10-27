@@ -1,7 +1,5 @@
 import { loginUser, registerUser } from "../api.js";
-import { renderHeaderComponent } from "./header-component.js";
-import { renderUploadImageComponent } from "./upload-image-component.js";
-import { format } from "../helpers.js";
+import { format, loadImage, url } from "../helpers.js";
 
 /**
  * Компонент страницы авторизации.
@@ -20,12 +18,12 @@ export function renderAuthPageComponent({ appEl, setUser }) {
      */
     let isLoginMode = true;
 
-    /**
-     * URL изображения, загруженного пользователем при регистрации.
-     * Используется только в режиме регистрации.
-     * @type {string}
-     */
-    let imageUrl = "";
+    // /**
+    //  * URL изображения, загруженного пользователем при регистрации.
+    //  * Используется только в режиме регистрации.
+    //  * @type {string}
+    //  */
+    // let imageUrl = "";
 
     /**
      * Рендерит форму авторизации или регистрации.
@@ -71,39 +69,41 @@ export function renderAuthPageComponent({ appEl, setUser }) {
       </div>    
     `;
 
-        appEl.innerHTML = appHtml;
+        // appEl.innerHTML = appHtml;
 
-        /**
-         * Устанавливает сообщение об ошибке в форме.
-         * @param {string} message - Текст сообщения об ошибке.
-         */
-        const setError = (message) => {
-            appEl.querySelector(".form-error").textContent = message;
-        };
+        // /**
+        //  * Устанавливает сообщение об ошибке в форме.
+        //  * @param {string} message - Текст сообщения об ошибке.
+        //  */
+        // const setError = (message) => {
+        //     appEl.querySelector(".form-error").textContent = message;
+        // };
 
-        // Рендерим заголовок страницы
-        renderHeaderComponent({
-            element: document.querySelector(".header-container"),
-        });
+        // // Рендерим заголовок страницы
+        // renderHeaderComponent({
+        //     element: document.querySelector(".header-container"),
+        // });
 
-        // Если режим регистрации, рендерим компонент загрузки изображения
-        const uploadImageContainer = appEl.querySelector(
-            ".upload-image-container",
-        );
-        if (uploadImageContainer) {
-            renderUploadImageComponent({
-                element: uploadImageContainer,
-                onImageUrlChange(newImageUrl) {
-                    imageUrl = newImageUrl;
-                },
-            });
-        }
+        // // Если режим регистрации, рендерим компонент загрузки изображения
+        // const uploadImageContainer = appEl.querySelector(
+        //     ".upload-image-container",
+        // );
+        // if (uploadImageContainer) {
+        //     renderUploadImageComponent({
+        //         element: uploadImageContainer,
+        //         onImageUrlChange(newImageUrl) {
+        //             imageUrl = newImageUrl;
+        //         },
+        //     });
+        // }
+
+        let entry = loadImage(appEl, appHtml);
 
         // Обработка клика на кнопку входа/регистрации
         document
             .getElementById("login-button")
             .addEventListener("click", () => {
-                setError("");
+                entry("");
 
                 if (isLoginMode) {
                     // Обработка входа
@@ -115,12 +115,12 @@ export function renderAuthPageComponent({ appEl, setUser }) {
                     );
 
                     if (!login) {
-                        alert("Введите логин");
+                        entry("Введите логин");
                         return;
                     }
 
                     if (!password) {
-                        alert("Введите пароль");
+                        entry("Введите пароль");
                         return;
                     }
 
@@ -130,7 +130,7 @@ export function renderAuthPageComponent({ appEl, setUser }) {
                         })
                         .catch((error) => {
                             console.warn(error);
-                            setError(error.message);
+                            entry(error.message);
                         });
                 } else {
                     // Обработка регистрации
@@ -159,18 +159,18 @@ export function renderAuthPageComponent({ appEl, setUser }) {
                         return;
                     }
 
-                    if (!imageUrl) {
+                    if (!url) {
                         alert("Не выбрана фотография");
                         return;
                     }
 
-                    registerUser({ login, password, name, imageUrl })
+                    registerUser({ login, password, name, url })
                         .then((user) => {
                             setUser(user.user);
                         })
                         .catch((error) => {
                             console.warn(error);
-                            setError(error.message);
+                            entry(error.message);
                         });
                 }
             });

@@ -159,38 +159,66 @@ export function renderPostsPageComponent({ appEl }) {
             );
         });
 
-        userEl.querySelector(".like-button").addEventListener("click", () => {
-            if (!getToken()) {
-                alert("Требуется авторизация");
-                return;
-            }
-            if (
-                userEl.querySelector(".like-button").dataset.isLiked === "true"
-            ) {
-                disLike({ token: getToken(), id: userEl.dataset.postId }).then(
-                    () => {
-                        goToPage(POSTS_PAGE);
-                        if (page === USER_POSTS_PAGE) {
-                            goToPage(USER_POSTS_PAGE, {
-                                userId: userEl.querySelector(".post-header")
-                                    .dataset.userId,
-                            });
-                        }
-                    },
-                );
-            } else {
-                like({ token: getToken(), id: userEl.dataset.postId }).then(
-                    () => {
-                        goToPage(POSTS_PAGE);
-                        if (page === USER_POSTS_PAGE) {
-                            goToPage(USER_POSTS_PAGE, {
-                                userId: userEl.querySelector(".post-header")
-                                    .dataset.userId,
-                            });
-                        }
-                    },
-                );
-            }
-        });
+        const likeButtonListener = () => {
+            userEl
+                .querySelector(".like-button")
+                .addEventListener("click", () => {
+                    if (!getToken()) {
+                        alert("Требуется авторизация");
+                        return;
+                    }
+                    if (
+                        userEl.querySelector(".like-button").dataset.isLiked ===
+                        "true"
+                    ) {
+                        disLike({
+                            token: getToken(),
+                            id: userEl.dataset.postId,
+                        }).then((data) => {
+                            let index = posts.indexOf(
+                                posts.filter(
+                                    (element) =>
+                                        element.id === userEl.dataset.postId,
+                                )[0],
+                            );
+                            posts[index] = data.post;
+
+                            userEl.querySelector(".post-likes").innerHTML =
+                                `<button class="like-button" data-is-liked=${data.post.isLiked}>
+                                <img src= ${data.post.isLiked ? "./assets/images/like-active.svg" : "./assets/images/like-not-active.svg"}>
+                            </button>
+                            <p class="post-likes-text">
+                                Нравится: <strong>${data.post.likes.length !== 0 ? data.post.likes[0].name + (data.post.likes.length > 1 ? " и еще " + (data.post.likes.length - 1) : "") : 0} </strong>
+                            </p>`;
+
+                            likeButtonListener();
+                        });
+                    } else {
+                        like({
+                            token: getToken(),
+                            id: userEl.dataset.postId,
+                        }).then((data) => {
+                            let index = posts.indexOf(
+                                posts.filter(
+                                    (element) =>
+                                        element.id === userEl.dataset.postId,
+                                )[0],
+                            );
+                            posts[index] = data.post;
+
+                            userEl.querySelector(".post-likes").innerHTML =
+                                `<button class="like-button" data-is-liked=${data.post.isLiked}>
+                                <img src= ${data.post.isLiked ? "./assets/images/like-active.svg" : "./assets/images/like-not-active.svg"}>
+                            </button>
+                            <p class="post-likes-text">
+                                Нравится: <strong>${data.post.likes.length !== 0 ? data.post.likes[0].name + (data.post.likes.length > 1 ? " и еще " + (data.post.likes.length - 1) : "") : 0} </strong>
+                            </p>`;
+
+                            likeButtonListener();
+                        });
+                    }
+                });
+        };
+        likeButtonListener();
     }
 }

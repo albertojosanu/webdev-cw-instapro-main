@@ -1,6 +1,4 @@
-import { renderUploadImageComponent } from "./upload-image-component.js";
-import { renderHeaderComponent } from "./header-component.js";
-import { format } from "../helpers.js";
+import { format, loadImage, url } from "../helpers.js";
 
 /**
  * 
@@ -8,8 +6,6 @@ import { format } from "../helpers.js";
  *
  */
 export function renderAddPostPageComponent({ appEl, onAddPostClick }) {
-    let imageUrl = "";
-
     const render = () => {
         // @TODO: Реализовать страницу добавления поста
         const appHtml = `
@@ -28,31 +24,10 @@ export function renderAddPostPageComponent({ appEl, onAddPostClick }) {
             </div>
         `;
 
-        appEl.innerHTML = appHtml;
-
-        const setError = (message) => {
-            appEl.querySelector(".form-error").textContent = message;
-        };
-
-        renderHeaderComponent({
-            element: document.querySelector(".header-container"),
-        });
-
-        const uploadImageContainer = appEl.querySelector(
-            ".upload-image-container",
-        );
-
-        if (uploadImageContainer) {
-            renderUploadImageComponent({
-                element: uploadImageContainer,
-                onImageUrlChange(newImageUrl) {
-                    imageUrl = newImageUrl;
-                },
-            });
-        }
+        let post = loadImage(appEl, appHtml);
 
         document.getElementById("add-button").addEventListener("click", () => {
-            setError("");
+            post("");
             const text = document.getElementById("text-input").value;
 
             if (!text) {
@@ -60,14 +35,17 @@ export function renderAddPostPageComponent({ appEl, onAddPostClick }) {
                 return;
             }
 
-            if (!imageUrl) {
+            if (!url) {
                 alert("Не выбрана фотография");
                 return;
             }
 
             onAddPostClick({
                 description: format(text),
-                imageUrl: imageUrl,
+                imageUrl: url,
+            }).catch((error) => {
+                console.warn(error);
+                post(error.message);
             });
         });
     };
